@@ -1,56 +1,45 @@
 import express from 'express';
-const app = express();
 import dotenv from 'dotenv';
 import color from 'colors';
 import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
-import routes from './routes/index.js'
+import routes from './routes/index.js';
 import path from 'path';
 import connectDb from './config/db.js';
 import bodyParser from 'body-parser';
+
 dotenv.config();
 
+// Create an instance of Express
+const app = express();
 
-// app.use(express.bodyParser());
+// Connect to the database
+connectDb();
 
-// app.use(express.json())
-app.use(express.static(path.join(process.cwd(),'public')));
-
-
-//ejs setup
-
+// Set up middleware
+app.use(express.static(path.join(process.cwd(), 'public')));
 app.set('view engine', 'ejs');
 app.set('views', './view');
-
-//middleware
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
 app.use(cors());
 app.use(morgan('dev'));
 app.use(helmet());
-
-connectDb();
-
-// app.get('/', (req,res) =>{
-//     return res.send("<h4> Welcome To Our Home Page </h4>")
-// }) 
 app.use('/', routes);
 
+// Define the port
+const port = process.env.PORT || 8000;
 
+app.post('/submit-form', (req, res) => {
+    const formData = req.body;
+    console.log("****",formData);
+    // Process the form data here, e.g., save to the database
+    // You can redirect or send a response back to the client
+    res.send('Form submitted successfully!');
+  });
 
-
-
-
-
-
-
-
-
-const port = process.env.PORT;
-
-app.listen(8080 , () =>{
-console.log(`Server is running on port 8080`.bgCyan.white);
-})
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`.bgCyan.white);
+});
